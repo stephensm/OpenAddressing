@@ -11,76 +11,73 @@ var OpenAd=(function(){
     //takes input of string and returns number between 0 and maxCap-1 inclusive
     function hash(str,size)
     {
-        exp.push("Hashing inputed key "+ str);
+        exp.push({"text":"Hashing inputed key "+ str,"color":"white"});
         var sum=0;
         for(var i=0;i<str.length;i++)
         {
             sum+=str.charCodeAt(i);
-          exp.push("Value of " +str.charAt(i) +" is "+str.charCodeAt(i));
-            exp.push("Sum is now "+ sum);
+          exp.push({"text":"Value of " +str.charAt(i) +" is "+str.charCodeAt(i), "color":'yellow'});
+            exp.push({"text":"Sum is now "+ sum,"color":'yellow'});
         }
-        exp.push("Hash number is the sum mod the Size");
-        exp.push(sum + " mod " + size + " = "+sum%size);
+        exp.push({"text":"Hash number is the sum mod the Size","color":'white'});
+        exp.push({"text":sum + " mod " + size + " = "+sum%size, "color":'yellow'});
         return sum%size;
         
     }
     
-        function hash2(k)
-    {
-        exp.push("double hashing inputed hash number as ("+ k +" mod 117)+1 =" +k%117+1);
-        return k%117+1;
-        
-    }
+   
     
     
     //linear probe technique
-    function linearProbe(hashNum)
+    function linearProbe(hashNum,hashFunc)
     {
-        exp.push("linearly probing " +hashNum+ " to be "+ (hashNum+1)%maxCap);
+        exp.push({"text":"linearly probing " +hashNum+ " to be "+ (hashNum+1)%maxCap,"color":'white'});
         return (hashNum+1)%maxCap;
         
     }
 
    
       //double probe technique
-    function doubleProbe(hashNum)
+    function doubleProbe(hashNum,hashFunc)
     {
         
-        a=hash2(hashNum);
+        a=hashFunc(hashNum);
 
-        exp.push("probing the sum of the hash numbers " +hashNum + " and "+ a + " to be "+ (hashNum+a)%maxCap);
+        exp.push({"text":"probing the sum of the hash numbers " +hashNum + " and "+ a + " to be "+ (hashNum+a)%maxCap,"color":'white'});
         return (hashNum+a)%maxCap;
     }
     
-    function insert(key,val,Probe)
+    function insert(key,val,Probe,hashFunc)
     {
         var hashed=hash(key,maxCap);
         var found=false;
         var count=0;
         while(!found){
-            exp.push("seeing if " +hashed+ " is available ");
+            exp.push({"text":"seeing if " +hashed+ " is available ","color":'white'});
             if (count>maxCap)
             {
-                return "No space available";
+                exp.push({"text":"No space available","color":'red'});
             }
             
             
-            if(data[hashed]["key"]=='None'|| data[hashed]["key"]=='Empty')
+            if(data[hashed]["key"]=='None'|| data[hashed]["key"]=='Empty'|| data[hashed]["key"]==key)
             {
-               
+             if(data[hashed]["key"]==key){
+                 exp.push({"text":key + "is already in hashtable. Replacing old value with " + val, "color":'white'});
+             }
                 data[hashed]={"key": key,"value": val};
                 found=true;
-                return "Sucessfully inserted "+key + " at position " + hashed+" with value " +val ;
+                exp.push({"text":"Sucessfully inserted "+key + " at position " + hashed+" with value " +val,"color":'green'});
             }
             else{
-                exp.push(hashed+ " is not available. Trying the next position ");
-               hashed=Probe(hashed);
+                exp.push({"text":hashed+ " is not available. Trying the next position ","color":'red'});
+               hashed=Probe(hashed,hashFunc);
             }
             count++;
         }
         return false;
     }
-    function remove(key,val,Probe)
+    function remove(key,val,Probe,hashFunc)
     {
         var hashed=hash(key,maxCap);
         var found=false;
@@ -88,48 +85,54 @@ var OpenAd=(function(){
         while(!found){
             if (count>maxCap)
             {
-                return "Unable to find " + key;
+                exp.push({"text":"Unable to find " + key,"color":'red'});
+                found=true;
             }
             if(data[hashed]["key"]==key)
             {
                 data[hashed]={"key": 'Empty', "value": "None"}
-                return "Sucessfully removed " +key + "replaced with Empty instead of None to enable the search function to continue past this point";
+                exp.push({"text": "Sucessfully removed " +key + "replaced with Empty instead of None to enable the search function to continue past this point","color":'green'});
+            found=true;
             }
             else{
-            xp.push(key+ " is not at "+ hashed +". Trying the next position ");    
-               hashed=Probe(hashed);
+            exp.push({"text":key+ " is not at "+ hashed +". Trying the next position ","color":'red'});    
+               hashed=Probe(hashed,hashFunc);
             }
             count++;
         }
         return false;
     }
-    function find(key,val, Probe)
+    function find(key,val, Probe,hashFunc)
     {
         var hashed=hash(key,maxCap);
         var found=false;
         var count=0;
         while(!found){
-            if (count>maxCap)
-            {
-                return "unable to find "+key;
-            }
+          if(count>maxCap)
+          {
+              exp.push({"text":"unable to find "+key, "color":'red'});
+              found=true;
+          }
             if(data[hashed]["key"]==key)
             {
                 savedVal=data[hashed]["value"];
-                return "Value of " + key + " is "+ savedVal;
-                
+                 exp.push({"text": "Value of " + key + " is "+ savedVal,"color" : 'green'});
+                found=true;
             }
              if(data[hashed]["key"]=='None')
             {
-                return "Unable to find " + key;
-                
+                 exp.push({"text":"Unable to find " + key,"color":'red'});
+                found=true;
             }
-            else{
-               hashed=Probe(hashed);
-            }
+            
+               console.log("check2");
+               hashed=Probe(hashed,hashFunc);
+            
+            console.log(count);
             count++;
         }
-        return false;
+        
+        
     }
     
     function reset()
@@ -166,28 +169,45 @@ var OpenAd=(function(){
         }
         return table;
     }
-    function process(probe,action,keyIn,valIn,div){
+    function process(probe,action,keyIn,valIn,hashFunc,div){
+        
         var probeType=ProbeDict[probe];
         var actType=ActDict[action];
+        actType(keyIn,valIn,probeType,hashFunc);
         
-        var message=actType(keyIn,valIn,probeType);
-        exp.push(message);
-        drawTable(div);
-        $('div.memo').remove();
         
-        var memo=$('<div class="memo"></div>');
+        $('div.note').remove();
+        
+        exp.push({"text": "", color:"red"});
         
         
         for (var i=0;i<exp.length;i++)
         {
-            var note=$('<div><label>'+exp[i]+'</label></div>');
-            memo.append(note);
-
+            var color=exp[i]["color"];
+            var note=$('<div class="note"><label style="color:'+color+'">'+exp[i]["text"]+'</label></div class="note">');
+    
+            $('div.note').hide();
+            $('div.exbox').append(note);
+            
+           $('div.note').delay(1000*i).fadeIn(500);
+            
         }
-        $('div.exbox').append(memo);
+      
+        dothingswithsleep(0,div);
         exp=[];
         
     }
+   
+function dothingswithsleep( part,div ) {
+    if( part == 0 ) {
+        console.log( "before sleep" );
+        setTimeout( function() { dothingswithsleep( 1 ,div); }, 1000*exp.length);
+    } else if( part == 1 ) {
+        drawTable(div);
+        console.log( "after sleep" );
+    }
+}
+
    
     
 
@@ -215,8 +235,9 @@ var OpenAd=(function(){
         
         var head2=$(" <h5 style='text-align: center; margin:10px;'>Probe Sequence</h5>");
         var linear=$('<div><input id="linear" type="radio" name="but" value="linear" /> <label for="linear">Linear</label></div>');
-        
         var dh=$('<div><input id="dh" type="radio" name="but" value="dh" /> <label for="dh">Double Hash</label></div>');
+        var hash=$("<label>Hash function 2</label><input class='hashfunc'></input>");
+        
         var head3=$(" <h5 style='text-align: center; margin:10px;'>Capacity</h5>");
             var mc=$("<label>Max Size</label><input class='maxCap'></input>");
         var go=$("<button class='go'>Go!</button>");  
@@ -242,15 +263,17 @@ var OpenAd=(function(){
                 
                     changed=true;
                 }
+                var hashFunc=function(k){return k%7+1;}
+                
             }
             console.log(changed);
             if(changed)
             {//reset();
             drawTable(div);}
-            process(probe,action,keyIn,valIn,div);
+            process(probe,action,keyIn,valIn,hashFunc, div);
         
         });
-        box.append(head1,ins,del,find,key,val,head2,linear,dh,head3,mc,go);
+        box.append(head1,ins,del,find,key,val,head2,linear,dh,hash,head3,mc,go);
         inputCol.append(head,title,box);
        
         
@@ -282,5 +305,5 @@ var OpenAd=(function(){
 }());
 $(document).ready(function(){
     $('.OpenAddress').each(function(){
-        OpenAd.setup($(this));});
+        OpenAd.setup($(this),$(this).data("features"));});
 });
