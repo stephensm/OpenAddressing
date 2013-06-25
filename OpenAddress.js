@@ -3,13 +3,13 @@ var OpenAd=(function(){
     var data={};
     var probe='linear';
     var size=0;
-    var ProbeDict={"linear":linearProbe,"quad":quadProbe, "dh":doubleProbe};
+    var ProbeDict={"linear":linearProbe, "dh":doubleProbe};
     var ActDict={"ins":insert,"del":remove,"find":find}
     var savedVal;
     var exp=[];
     
     //takes input of string and returns number between 0 and maxCap-1 inclusive
-    function hash(str)
+    function hash(str,size)
     {
         exp.push("Hashing inputed key "+ str);
         var sum=0;
@@ -19,9 +19,16 @@ var OpenAd=(function(){
           exp.push("Value of " +str.charAt(i) +" is "+str.charCodeAt(i));
             exp.push("Sum is now "+ sum);
         }
-        exp.push("Hash number is the sum mod the Max Size");
-        exp.push(sum + " mod " + maxCap + " = "+sum%maxCap);
-        return sum%maxCap;
+        exp.push("Hash number is the sum mod the Size");
+        exp.push(sum + " mod " + size + " = "+sum%size);
+        return sum%size;
+        
+    }
+    
+        function hash2(k)
+    {
+        exp.push("double hashing inputed hash number as ("+ k +" mod 117)+1 =" +k%117+1);
+        return k%117+1;
         
     }
     
@@ -33,26 +40,21 @@ var OpenAd=(function(){
         return (hashNum+1)%maxCap;
         
     }
-    //quadratic probe technique
-    function quadProbe(hashNum)
-    {
-        exp.push("Quadratic probing" +hashNum+ " to be "+ (hashNum*hashNum)%maxCap);
-        return (hashNum*hashNum)%maxCap;
-    }
-      //quadratic probe technique
+
+   
+      //double probe technique
     function doubleProbe(hashNum)
     {
         
-        a=hash(hashNum);
-        exp.push("hashing again" +hashNum+ " to give second hash number "+ a);
-        
-        exp.push("probing the sum of the hash numbers " +hashNum +a + " to be "+ (hashNum+a)%maxCap);
+        a=hash2(hashNum);
+
+        exp.push("probing the sum of the hash numbers " +hashNum + " and "+ a + " to be "+ (hashNum+a)%maxCap);
         return (hashNum+a)%maxCap;
     }
     
     function insert(key,val,Probe)
     {
-        var hashed=hash(key);
+        var hashed=hash(key,maxCap);
         var found=false;
         var count=0;
         while(!found){
@@ -80,7 +82,7 @@ var OpenAd=(function(){
     }
     function remove(key,val,Probe)
     {
-        var hashed=hash(key);
+        var hashed=hash(key,maxCap);
         var found=false;
         var count=0;
         while(!found){
@@ -91,9 +93,10 @@ var OpenAd=(function(){
             if(data[hashed]["key"]==key)
             {
                 data[hashed]={"key": 'Empty', "value": "None"}
-                return "Sucessfully removed " +key;
+                return "Sucessfully removed " +key + "replaced with Empty instead of None to enable the search function to continue past this point";
             }
             else{
+            xp.push(key+ " is not at "+ hashed +". Trying the next position ");    
                hashed=Probe(hashed);
             }
             count++;
@@ -102,7 +105,7 @@ var OpenAd=(function(){
     }
     function find(key,val, Probe)
     {
-        var hashed=hash(key);
+        var hashed=hash(key,maxCap);
         var found=false;
         var count=0;
         while(!found){
@@ -170,15 +173,19 @@ var OpenAd=(function(){
         var message=actType(keyIn,valIn,probeType);
         exp.push(message);
         drawTable(div);
-        var memmo=null;
-        $('div.memmo').remove();
+        $('div.memo').remove();
+        
+        var memo=$('<div class="memo"></div>');
+        
+        
         for (var i=0;i<exp.length;i++)
         {
-            memmo=$('<div class="memmo"><label>'+exp[i]+'</label></memo>');
-        $('div.exbox').append(memmo);
+            var note=$('<div><label>'+exp[i]+'</label></div>');
+            memo.append(note);
 
         }
-        
+        $('div.exbox').append(memo);
+        exp=[];
         
     }
    
@@ -208,7 +215,7 @@ var OpenAd=(function(){
         
         var head2=$(" <h5 style='text-align: center; margin:10px;'>Probe Sequence</h5>");
         var linear=$('<div><input id="linear" type="radio" name="but" value="linear" /> <label for="linear">Linear</label></div>');
-        var quad=$('<div><input id="quad" type="radio" name="but" value="quad" /> <label for="quad">Quadratic</label></div>');
+        
         var dh=$('<div><input id="dh" type="radio" name="but" value="dh" /> <label for="dh">Double Hash</label></div>');
         var head3=$(" <h5 style='text-align: center; margin:10px;'>Capacity</h5>");
             var mc=$("<label>Max Size</label><input class='maxCap'></input>");
@@ -243,7 +250,7 @@ var OpenAd=(function(){
             process(probe,action,keyIn,valIn,div);
         
         });
-        box.append(head1,ins,del,find,key,val,head2,linear,quad,dh,head3,mc,go);
+        box.append(head1,ins,del,find,key,val,head2,linear,dh,head3,mc,go);
         inputCol.append(head,title,box);
        
         
