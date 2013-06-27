@@ -14,12 +14,14 @@ var OpenAd=(function(){
     {
         exp.push({"text":"Hashing inputed key "+ str,"color":"white"});
         var sum=0;
+        var string="";
         for(var i=0;i<str.length;i++)
         {
             sum+=str.charCodeAt(i);
-          exp.push({"text":"Value of " +str.charAt(i) +" is "+str.charCodeAt(i), "color":'yellow'});
-            exp.push({"text":"Sum is now "+ sum,"color":'yellow'});
+         
+         
         }
+        exp.push({"text":"Sum of the values of each letter is: "+sum,"color":'yellow'});
         exp.push({"text":"Hash number is the sum mod the Size","color":'white'});
         exp.push({"text":sum + " mod " + size + " = "+sum%size, "color":'yellow'});
         return sum%size;
@@ -236,7 +238,7 @@ function dothingswithsleep( part,div,hbox,ht ) {
         {
             var locs=added[i]["places"];
             if(hNum[locs[0]]!=null){
-                hNum[locs[0]]=hNum[locs[0]]+ ", "+added[i]["key"];
+                hNum[locs[0]]=hNum[locs[0]]+","+added[i]["key"];
             }
             else{hNum[locs[0]]=added[i]["key"];}
             lines.push({"from":locs[0], "to":locs[0], "item": added[i]["key"]});
@@ -264,8 +266,9 @@ function dothingswithsleep( part,div,hbox,ht ) {
        
         Rtablecontents += "<tr>";
       Rtablecontents += "<td>"+i+"</td>";
-      
-      Rtablecontents += "<td>"+hNum[i]+"</td>";
+      if(hNum[i]!=undefined)
+      {Rtablecontents += "<td>"+hNum[i]+"</td>";}
+       else{Rtablecontents += "<td></td>";}
    }
    tablecontents += "</table>";
    Rtablecontents += "</table>";        
@@ -273,9 +276,10 @@ function dothingswithsleep( part,div,hbox,ht ) {
   tableDiv.append($(tablecontents),$(Rtablecontents));
         exbox.append(tableDiv);
         
-        var canvas=$('<canvas class= "can" id="art" height="'+maxCap*39+'"></canvas>');
-        exbox.append(canvas);
-        drawLines(lines,canvas);
+        var canvas=$('<canvas class= "can" id="art" height="'+maxCap*70+'"></canvas>');
+        var canvas2=$('<canvas class= "can2" id="art" height="'+maxCap*62+'"></canvas>');
+        exbox.append(canvas,canvas2);
+        drawLines(lines,canvas,canvas2);
     }   
     function clear(canvas){
         var DOMcanvas = canvas[0];
@@ -284,46 +288,76 @@ function dothingswithsleep( part,div,hbox,ht ) {
     ctx.clearRect(0,0,canvas.width(),canvas.height());
     }
     
-       function drawLines(lines,canvas)
+    
+       function drawLines(lines,canvas,canvas2)
     {
-        clear(canvas);
-        var w=canvas.width();
-        var h=canvas.height();
-        var DOMcanvas = canvas[0];    
+        clear(canvas2);
+        var w=canvas2.width();
+        var h=canvas2.height();
+        var DOMcanvas = canvas2[0];    
         var ctx = DOMcanvas.getContext('2d');
         ctx.strokeStyle="white";
         ctx.lineCap="round";
         ctx.lineJoin="round";
-       
         for(var i=0;i<lines.length;i++)
         {
         animate(ctx,lines,i);
    
     }
+    
+        clear(canvas);
+        var DOMcanvas1 = canvas[0];    
+        var ctx1 = DOMcanvas1.getContext('2d');
+        ctx1.strokeStyle="white";
+        ctx1.lineCap="round";
+        ctx1.lineJoin="round";
+         for (var i=0;i<added.length;i++){
+
+        draw(ctx1,i);
+        }
+    
+    }
+    function draw(ctx,i){
+       
+        setTimeout(function(){
+            var size=65;
+            var offset=100;
+            var to=added[i]["places"][0];
+        ctx.strokeStyle="white";    
+            ctx.beginPath();
+            
+                canvas_arrow(ctx,0,i*size+offset, 300,to*size+offset+10);
+             ctx.stroke();
+            
+        
+        },500*i);
     }
     function animate(ctx,lines,i){
     setTimeout(function(){
+          var size=61;
+                var offset=60;
         if(lines[i]["from"]==lines[i]["to"])
             { 
-             
+           
+            ctx.strokeStyle="white";    
             ctx.beginPath();
-             ctx.strokeStyle=(i*20,10,100);
-                canvas_arrow(ctx,0,lines[i]["from"]*39+20, 300,lines[i]["from"]*39+20);
+            
+                canvas_arrow(ctx,0,lines[i]["from"]*size+offset, 300,lines[i]["from"]*size+offset+10);
              ctx.stroke();
             }
             else{
-                
-            ctx.beginPath();
-            ctx.strokeWidth=20;
+           // console.log("bounce");
             ctx.strokeStyle="red";   
-                var diff=Math.abs(lines[i]["from"]-lines[i]["to"]);
-            ctx.moveTo(300,lines[i]["from"]*39+20);       
-                ctx.lineTo(280,lines[i]["from"]*39+20+diff*19.5);
-                canvas_arrow(ctx,280,lines[i]["from"]*39+20+diff*19.5, 300,lines[i]["to"]*39+20);
-                
+            var diff=lines[i]["to"]-lines[i]["from"];
+           ctx.beginPath();
+            
+           ctx.moveTo(300,lines[i]["from"]*size+offset);
+             ctx.lineTo(300-5*i,lines[i]["from"]*size+offset+diff*size/2); 
+              canvas_arrow(ctx, 300-5*i,lines[i]["from"]*size+offset+diff*size/2, 300,lines[i]["to"]*size+offset)
              ctx.stroke();
+        
             }
-        console.log("wait");}, 1000*i);
+        console.log();}, added.length*500+ 1000*i);
         }
     
 function canvas_arrow(ctx, fromx, fromy, tox, toy){
