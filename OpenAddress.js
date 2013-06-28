@@ -8,6 +8,7 @@ var OpenAd=(function(){
     var savedVal;
     var exp=[];
     var added=[];
+    var speed=100;
     
     //takes input of string and returns number between 0 and maxCap-1 inclusive
    function hash(str,size)
@@ -202,7 +203,7 @@ var OpenAd=(function(){
             var note=$('<div class="note"><label style="color:'+color+'">'+exp[i]["text"]+'</label></div class="note">');
     
             note.hide();
-            note.delay(1000*i).fadeIn(500);
+            note.delay(speed*i).fadeIn(speed/2);
             exbox.append(note);
             
            
@@ -217,7 +218,7 @@ var OpenAd=(function(){
 function dothingswithsleep( part,div,hbox,ht ) {
     if( part == 0 ) {
         
-        setTimeout( function() { dothingswithsleep( 1 ,div,hbox,ht); }, 1000*exp.length);
+        setTimeout( function() { dothingswithsleep( 1 ,div,hbox,ht); }, speed*exp.length);
     } else if( part == 1 ) {
         drawTable(div,hbox,ht);
     
@@ -241,14 +242,8 @@ function dothingswithsleep( part,div,hbox,ht ) {
                 hNum[locs[0]]=hNum[locs[0]]+","+added[i]["key"];
             }
             else{hNum[locs[0]]=added[i]["key"];}
-            lines.push({"from":locs[0], "to":locs[0], "item": added[i]["key"]});
-            var previous=locs[0];
-            for (var j=1;j<locs.length;j++){
-               lines.push ({"from":previous, "to":locs[j], "item": added[i]["key"]});
-                previous=locs[j];
-                
-            }
-            
+           
+           
         }
    var tableDiv=$("<div class='map'></div>");     
     var tablecontents = "<table class='left'><tr><td>Key</td></tr>";
@@ -279,31 +274,22 @@ function dothingswithsleep( part,div,hbox,ht ) {
         var canvas=$('<canvas class= "can" id="art" height="'+maxCap*70+'"></canvas>');
         var canvas2=$('<canvas class= "can2" id="art" height="'+maxCap*62+'"></canvas>');
         exbox.append(canvas,canvas2);
-        drawLines(lines,canvas,canvas2);
+        drawLines(canvas,canvas2);
     }   
     function clear(canvas){
         var DOMcanvas = canvas[0];
         var ctx = DOMcanvas.getContext('2d');
-        // x, y, w, h
+       
     ctx.clearRect(0,0,canvas.width(),canvas.height());
     }
     
     
-       function drawLines(lines,canvas,canvas2)
+       function drawLines(canvas,canvas2)
     {
         clear(canvas2);
-        var w=canvas2.width();
-        var h=canvas2.height();
         var DOMcanvas = canvas2[0];    
         var ctx = DOMcanvas.getContext('2d');
-        ctx.strokeStyle="white";
-        ctx.lineCap="round";
-        ctx.lineJoin="round";
-        for(var i=0;i<lines.length;i++)
-        {
-        animate(ctx,lines,i);
-   
-    }
+  
     
         clear(canvas);
         var DOMcanvas1 = canvas[0];    
@@ -313,24 +299,39 @@ function dothingswithsleep( part,div,hbox,ht ) {
         ctx1.lineJoin="round";
          for (var i=0;i<added.length;i++){
 
-        draw(ctx1,i);
+        draw(ctx1,ctx,i);
         }
     
     }
-    function draw(ctx,i){
-       
+    function draw(ctx,ctx2,i){
+       ctx.lineWidth = "5";
+        ctx2.lineWidth = "5";
         setTimeout(function(){
-            var size=65;
-            var offset=100;
+            var size=60;
+            var offset=65;
             var to=added[i]["places"][0];
         ctx.strokeStyle="white";    
             ctx.beginPath();
             
                 canvas_arrow(ctx,0,i*size+offset, 300,to*size+offset+10);
              ctx.stroke();
+            var lines2=[];
+            var locs=added[i]["places"];
+    
+            lines2.push({"from":locs[0], "to":locs[0], "item": added[i]["key"]});
+            //console.log("yay");
+           
             
+            for (var j=0;j<locs.length;j++){
+               lines2.push ({"from":previous, "to":locs[j], "item": added[i]["key"]});
+                var previous=locs[j];
+            }
+            for(var x=0;x<lines2.length;x++)
+            {
+                animate(ctx2,lines2,x);
+            }
         
-        },500*i);
+        },speed*i);
     }
     function animate(ctx,lines,i){
     setTimeout(function(){
@@ -357,7 +358,7 @@ function dothingswithsleep( part,div,hbox,ht ) {
              ctx.stroke();
         
             }
-        console.log();}, added.length*500+ 1000*i);
+        console.log();}, speed/2*i);
         }
     
 function canvas_arrow(ctx, fromx, fromy, tox, toy){
@@ -383,7 +384,9 @@ function canvas_arrow(ctx, fromx, fromy, tox, toy){
         var head1=$(" <div><h5 style='text-align: center; margin:10px;'>Action</h5></div>");
         var ins=$('<div><label>Key </label></div>');
         var inskey=$('<input class="key"></input>');
-        var insval=$("<label>Value</label><input class='val'></input>");
+        var insval=$("<label>Value</label>");
+        var into=$("<input class='val'></input>");
+        insval.append(into);
         var insbut=$('<button>Insert</button>');
         insbut.on("click",function(){
                  var changed="false";
@@ -397,13 +400,13 @@ function canvas_arrow(ctx, fromx, fromy, tox, toy){
                }
     
             action= 'ins';
-            var keyIn=$('.key').val();
-            var valIn=$('.val').val();
+            var keyIn=inskey.val();
+            var valIn=into.val();
             
-            if($('.maxCap').val()!=null){
-                if(maxCap!=parseInt($('.maxCap').val()))
+            if(max.val()!=null){
+                if(maxCap!=parseInt(max.val()))
                 {
-                maxCap=parseInt($('.maxCap').val());
+                maxCap=parseInt(max.val());
                 
                     changed=true;
                 }
@@ -413,19 +416,15 @@ function canvas_arrow(ctx, fromx, fromy, tox, toy){
             
             if(changed)
             {
-                reset(maxCap);
-    
                 drawTable(div,hbox,ht);}
             process(probe,action,keyIn,valIn,hashFunc, hbox,ht,exbox,div);
      
         });
         ins.append(inskey,insval,insbut);
-      
-        
-        
-       
-        
-        var del=$('<div><label> Delete Key </label><input class="key2"></input></div>');
+     
+        var del=$('<div><label> Delete Key </label></div>');
+        var keysel=$("<input class='key2'></input>");
+        del.append(keysel);
         var delbut=$('<button> Delete</button>');
         
         delbut.on("click",function(){
@@ -440,13 +439,13 @@ function canvas_arrow(ctx, fromx, fromy, tox, toy){
                }
     
             action= 'del';
-            var keyIn=$('.key2').val();
+            var keyIn=keysel.val();
             
             var valIn=0;
-            if($('.maxCap').val()!=null){
-                if(maxCap!=parseInt($('.maxCap').val()))
+            if(max.val()!=null){
+                if(maxCap!=parseInt(max.val()))
                 {
-                maxCap=parseInt($('.maxCap').val());
+                maxCap=parseInt(max.val());
                 
                     changed=true;
                 }
@@ -455,7 +454,9 @@ function canvas_arrow(ctx, fromx, fromy, tox, toy){
             });
         del.append(delbut);
        
-        var find=$('<div><label>Find Key</label><input class="key3"></input></div>');
+        var find=$('<div><label>Find Key</label></div>');
+        var keyfind=$('<input class="key3"></input>');
+        find.append(keyfind);
         var findbut=$('<button>Find</button>');
          findbut.on("click",function(){
                  var changed="false";
@@ -469,13 +470,13 @@ function canvas_arrow(ctx, fromx, fromy, tox, toy){
                }
     
             action= 'find';
-            var keyIn=$('.key2').val();
+            var keyIn=keyfind.val();
             
             var valIn=0;
-            if($('.maxCap').val()!=null){
-                if(maxCap!=parseInt($('.maxCap').val()))
+            if(max.val()!=null){
+                if(maxCap!=parseInt(max.val()))
                 {
-                maxCap=parseInt($('.maxCap').val());
+                maxCap=parseInt(max.val());
                 
                     changed=true;
                 }
@@ -483,24 +484,29 @@ function canvas_arrow(ctx, fromx, fromy, tox, toy){
                 
             });
         
-
+        find.append(findbut);
         var head2=$("<div> <h5 style='text-align: center; margin:10px;'>Probe Sequence</h5></div>");
-        var linear=$('<input class="linear" type="radio" name="but" value="linear"  />Linear</input>');
+        var linear=$('<input class="linear"  type="radio" name="but" value="linear" />Linear</input>'); 
+        linear.checked="checked" ;
+        
+        
   
         
         var dh=$('<div><input id="dh" type="radio" name="but" value="dh" /> <label for="dh">Double Hash</label></div>');
         
         var head3=$(" <h5 style='text-align: center; margin:10px;'>Capacity</h5>");
-            var mc=$("<label>Max Size</label><input class='maxCap'></input>");
-        mc.val(maxCap);
+            var mc=$("<label>Max Size</label>");
+        var max=$("<input class='maxCap'></input>");
+        mc.append(max);
+        max.val(maxCap);
         var go=$("<button class='go'>update</button>");  
         go.on("click",function(){
-           
-            
-            if($('.maxCap').val()!=null){
-                if(maxCap!=parseInt($('.maxCap').val()))
+           var changed=false;
+            console.log(max.val());
+            if(max.val()!=null){
+                if(maxCap!=parseInt(max.val()))
                 {
-                maxCap=parseInt($('.maxCap').val());
+                maxCap=parseInt(max.val());
                 
                     changed=true;
                 }
@@ -511,13 +517,21 @@ function canvas_arrow(ctx, fromx, fromy, tox, toy){
             if(changed)
             {
                 reset(maxCap);
+                added=[];
     
                 drawTable(div,hbox,ht);}
         
         });
         
         var clear=$("<button class='clear'>Clear All Data</button>");  
-        clear.on("click",function(){reset(1000);$('.can').remove();drawTable(div,hbox,ht);});
+        clear.on("click",function(){reset(1000);
+                                    $('.can').remove();
+                                    $('.can2').remove();
+                                    $('.left').remove();
+                                     $('.right').remove();
+                                    $('.note').remove();
+                                    added=[];
+                                    drawTable(div,hbox,ht);});
         
         
         
