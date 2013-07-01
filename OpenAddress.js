@@ -601,7 +601,7 @@ function canvas_arrow(ctx, fromx, fromy, tox, toy)
         //div that handles explanation and visualization
         var explain=$("<div class='explain'  width=500px></div>");
         var exbox=$("<div class='exbox' ></div>");
-        var dataAd=$("<button class='add'>Insert Data Visualization</button>");  
+        var dataAd=$("<button class='add'>Insert Data Example</button>");  
         dataAd.on("click",function()
             {
                 var inputData=[];
