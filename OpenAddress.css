@@ -4,22 +4,12 @@
   top: 50px;
   left: 0px;
   height: 500px;
-  background-image: linear-gradient(bottom, rgb(60,153,252) 0%, rgb(6,15,115) 50%);
-background-image: -o-linear-gradient(bottom, rgb(60,153,252) 0%, rgb(6,15,115) 50%);
-background-image: -moz-linear-gradient(bottom, rgb(60,153,252) 0%, rgb(6,15,115) 50%);
-background-image: -webkit-linear-gradient(bottom, rgb(60,153,252) 0%, rgb(6,15,115) 50%);
-background-image: -ms-linear-gradient(bottom, rgb(60,153,252) 0%, rgb(6,15,115) 50%);
 
-background-image: -webkit-gradient(
-    linear,
-	left bottom,
-	left top,
-	color-stop(0, rgb(60,153,252)),
-	color-stop(0.5, rgb(6,15,115))
-);
+background-color:#93D3FA;
+color:#99FA93;
   z-index: 1000;
   padding: 0;
-  color:white ;
+  color:black;
 }
 
 
@@ -28,13 +18,13 @@ background-image: -webkit-gradient(
     display: inline-block;
 	border: 1px solid black ; padding:5px; margin: 5px;
     height:350px;
-	width:200px;
-	border: 1px solid white;
+	width:210px;
 	z-index: 1;
     font-size:10pt;
   
 }
 .hbox{
+    
 	position: absolute;
     display: inline-block;
     height:300px;
@@ -51,7 +41,7 @@ background-image: -webkit-gradient(
 	border: 1px solid black ; padding:5px; margin: 5px;
     height:350px;
 	width:620px;
-	border: 1px solid white;
+	
 	z-index: 1;
     overflow:scroll;
   
@@ -88,21 +78,24 @@ background-image: -webkit-gradient(
 .key{ margin-left: 5px;
     width:30px;
     margin-right: 5px;
-    
+    display: inline-block;
 }
 .key2{ margin-left: 5px;
     width:30px;
     margin-right: 5px;
+    display: inline-block;
     
 }
 .key3{ margin-left: 5px;
     width:30px;
     margin-right: 5px;
+    display: inline-block;
     
 }
-.val{ margin-left: 10px;
+.val{ margin-left: 5px;
     width:30px;
     margin-right:5px;
+    display: inline-block;
 }
 .hashfunc{margin-left: 10px;
     width:55px;
@@ -116,8 +109,8 @@ background-image: -webkit-gradient(
 
 .hashTable {
 	clear: both;
-	border: 1px solid white;
-    color:white;
+	
+    color:black;
     height:200px;
      width: 150px;
     
@@ -127,27 +120,30 @@ background-image: -webkit-gradient(
 }
 .ht{
 
-    color:white;
+    color:black;
     height:250px;
      width: 150px;
 
 }
 .left{
     clear: both;
-   
-	border: 1px solid white;
-    color:white;
-    width: 60px;
-    position:absolute;
-    
+
+  float:left; 
+    overflow:hidden;
+    color:black;
+    width:70px;
+    max-width: 70px;
+ 
   
 }
 .right{
     clear: both;
     align-self:right;
-	border: 1px solid white;
-    color:white;
-    width: 120px;
+	float:left; 
+    overflow:hidden;
+    color:black;
+    width:120px;
+    max-width: 120px;
     position:absolute;
    left:200px;
     
@@ -157,34 +153,39 @@ max-width: 50px;
     max-height:22px;
     overflow: auto;
 }
-.headTable{
-    clear: both;
-	border: 1px solid white;
-    color:white;
-   width: 150px;
-}
+
 th, td {
    
-    border: 1px solid white;
+    
     overflow: scroll;
     
     max-width: 200px;
     max-height:22px;
     font-size:12pt;
     
+    
 }
+tr:nth-child(odd)		{ background-color:#99FA93; }
+tr:nth-child(even)		{ background-color:#fff; }
 
 .can{
    
-    color:white;
+    color:blue;
     width: 125px;
     position:absolute;
    left:75px;
 }
 .can2{
     
-    color:white;
+    color:blue;
     width: 125px;
     position:relative;
-   left:320px;
+   left:245px;
 }
+.span3 p{color:black; font-weight: bold; padding: 10px;}  
+h2 {color:black; margin: 10px 0 10px 0;}  
+        
+
+.span4 h1{color:black; font-family: ‘Palatino Linotype’, ‘Book Antiqua’, Palatino, serif;font-weight: bold; font-size:40pt; padding-left:60px;position:inline}
+    p{color:orange;font-family: 'Corsiva Hebrew';font-size:16pt; padding-left: 60px;}
+.container-fluid {background-color:#A0D8EB; padding: 10px;font-family: ‘Palatino Linotype’, ‘Book Antiqua’, Palatino, serif;}
