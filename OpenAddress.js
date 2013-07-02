@@ -182,7 +182,7 @@ var OpenAd=(function(){
         $('.can2').remove();
         $('div.map').remove();
         $('table.left').remove();
-        $('tabel.right').remove();
+        $('table.right').remove();
         exp.push({"text": "", color:"red"});
         
         for (var i=0;i<exp.length;i++)
@@ -207,7 +207,7 @@ var OpenAd=(function(){
         $('.can2').remove();
         $('div.map').remove();
         $('table.left').remove();
-        $('tabel.right').remove();
+        $('table.right').remove();
        
         mapData(exbox);
         drawTable(div,hbox,ht);
@@ -223,7 +223,7 @@ var OpenAd=(function(){
         $('div.can').remove();
         $('div.map').remove();
         $('table.left').remove();
-        $('tabel.right').remove();
+        $('table.right').remove();
         var hNum={};
         var lines=[];
         for(var i=0;i<added.length;i++)
@@ -418,7 +418,7 @@ function canvas_arrow(ctx, fromx, fromy, tox, toy)
         //processes inputs on click
         insbut.on("click",function(){
                  var changed="false";
-            
+                
             if( $('input:radio[name=but]:checked').val()!=null)
             {
                 if(probe!=$('input:radio[name=but]:checked').val())
@@ -444,7 +444,10 @@ function canvas_arrow(ctx, fromx, fromy, tox, toy)
             {
                 drawTable(div,hbox,ht);
             }
+            temp=speed;
+            speed=0;
             process(probe,action,keyIn,valIn,hashFunc, hbox,ht,exbox,div);
+            speed=temp;
      
         });
         insval.append(into,insbut);
