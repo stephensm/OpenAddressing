@@ -5,6 +5,8 @@ OpenAddress.js
 OpenAddress.css
 city.txt
 
+view demo online here: http://htmlpreview.github.io/?https://github.com/stephensm/OpenAddressing/blob/master/OpenAddress.html
+
 To view the demo html also download
 test.txt
 OpenAddress.html
